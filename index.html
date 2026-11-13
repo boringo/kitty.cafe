@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>kitty.cafe</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      color: #f4eff1;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem;
+      /* Deep cosmic dark background with soft pink/purple night glows */
+      background-color: #121014;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(255, 107, 151, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(177, 133, 219, 0.15) 0%, transparent 45%);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    /* Dark Apple Liquid Glass Card */
+    .profile-card {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(
+        135deg,
+        rgba(30, 24, 30, 0.7) 0%,
+        rgba(18, 15, 20, 0.5) 100%
+      );
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(255, 150, 180, 0.18);
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1.5px 1.5px rgba(255, 255, 255, 0.2),
+        inset 1.5px 0 1.5px rgba(255, 107, 151, 0.15),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.5);
+      border-radius: 32px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* Discord Banner Area */
+    #dc-banner {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #382533, #241d38);
+      background-size: cover;
+      background-position: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-body {
+      padding: 0 2rem 2.25rem;
+    }
+
+    /* Avatar Overlapping Banner */
+    .avatar-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: -50px auto 1rem;
+    }
+
+    #dc-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1a1518;
+      border: 4px solid rgba(30, 24, 30, 0.9);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    #dc-dot {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid #1e181e;
+      background: #80848e;
+    }
+
+    /* Display Name */
+    h1 {
+      margin: 0 0 0.15rem;
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #ff6b97;
+      text-shadow: 0 2px 16px rgba(255, 107, 151, 0.35);
+      letter-spacing: -0.01em;
+    }
+
+    .handle {
+      color: #b185db;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+
+    .bio {
+      color: #c4b5b8;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0 auto 1.6rem;
+      max-width: 340px;
+    }
+
+    /* Live Discord Activity Pill */
+    .discord-status-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 107, 151, 0.15);
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      margin-bottom: 1.4rem;
+      font-size: 0.86rem;
+      color: #d8cace;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .discord-status-box svg {
+      width: 16px;
+      height: 16px;
+      fill: #7983f5;
+      flex-shrink: 0;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .social-btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      color: #f4eff1;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .social-btn:hover {
+      background: rgba(255, 107, 151, 0.15);
+      border-color: rgba(255, 107, 151, 0.4);
+      transform: translateY(-2px);
+      color: #ff6b97;
+      box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.2), 0 6px 20px rgba(255, 107, 151, 0.15);
+    }
+
+    footer {
+      margin-top: 1.6rem;
+      font-size: 0.8rem;
+      color: #8c7a80;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-card">
+    <div id="dc-banner"></div>
+
+    <div class="card-body">
+      <div class="avatar-container">
+        <img id="dc-avatar" src="" alt="Avatar">
+        <span id="dc-dot"></span>
+      </div>
+
+      <h1 id="dc-display-name">Claire</h1>
+      <div class="handle" id="dc-handle">@loading...</div>
+      <p class="bio">meow :3</p>
+
+      <div class="discord-status-box">
+        <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6,5.4,80.21h0A105.73,105.73,0,0,0,32.79,93.52,79.38,79.38,0,0,0,38.84,85a73,73,0,0,1-11.55-5.55c1-.72,1.98-1.48,2.94-2.26A74.47,74.47,0,0,0,96.9,77.1a73.27,73.27,0,0,1,3,5.55,105.47,105.47,0,0,0,27.39-13.3c7.58-23.77-1.71-47.67-19.54-61.25ZM42.45,65.69C36.18,65.69,31,60,31,53s5.18-12.72,11.45-12.72S53.9,46,53.86,53,48.71,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.18-12.72,11.45-12.72S96.15,46,96.1,53,90.95,65.69,84.69,65.69Z"/></svg>
+        <span id="dc-activity">Loading status...</span>
+      </div>
+
+      <div class="social-links">
+        <a href="https://discord.com/users/1226611648413040821" target="_blank" class="social-btn">Discord Profile</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DISCORD_ID = "1226611648413040821";
+
+    const statusColors = {
+      online: "#23a55a",
+      idle: "#f0b232",
+      dnd: "#f23f43",
+      offline: "#80848e"
+    };
+
+    async function loadDiscord() {
+      try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`);
+        const { data } = await res.json();
+        const user = data.discord_user;
+
+        if (user.avatar) {
+          const avatarExt = user.avatar.startsWith("a_") ? "gif" : "png";
+          document.getElementById("dc-avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${avatarExt}?size=256`;
+        }
+        document.getElementById("dc-display-name").textContent = user.display_name || user.username;
+        document.getElementById("dc-handle").textContent = `@${user.username}`;
+
+        const bannerEl = document.getElementById("dc-banner");
+        if (user.banner) {
+          const bannerExt = user.banner.startsWith("a_") ? "gif" : "png";
+          bannerEl.style.backgroundImage = `url('https://cdn.discordapp.com/banners/${user.id}/${user.banner}.${bannerExt}?size=600')`;
+        } else if (user.banner_color) {
+          bannerEl.style.background = user.banner_color;
+        }
+
+        document.getElementById("dc-dot").style.background = statusColors[data.discord_status] || statusColors.offline;
+
+        const activityEl = document.getElementById("dc-activity");
+        const customStatus = data.activities?.find(a => a.type === 4);
+        const game = data.activities?.find(a => a.type === 0);
+
+        if (data.listening_to_spotify && data.spotify) {
+          activityEl.textContent = `Listening to ${data.spotify.song}`;
+        } else if (customStatus && customStatus.state) {
+          activityEl.textContent = customStatus.state;
+        } else if (game) {
+          activityEl.textContent = `Playing ${game.name}`;
+        } else {
+          activityEl.textContent = data.discord_status.charAt(0).toUpperCase() + data.discord_status.slice(1);
+        }
+      } catch {
+        document.getElementById("dc-activity").textContent = "Status offline";
+      }
+    }
+
+    loadDiscord();
+  </script>
+</body>
+</html>
