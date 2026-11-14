@@ -342,7 +342,7 @@
     setInterval(fetchDiscordData, 10000);
 
     /* ==========================================
-       2. CLASSIC OSU! CURSOR & GLOWING TRAIL
+       2. CUSTOM PNG OSU! CURSOR & GLOWING TRAIL
        ========================================== */
     const canvas = document.getElementById('osu-cursor-canvas');
     const ctx = canvas.getContext('2d');
@@ -362,6 +362,12 @@
       let trail = [];
       let isMouseDown = false;
       let cursorScale = 1;
+
+      // Load your cursor.png image file
+      const cursorImg = new Image();
+      cursorImg.src = 'cursor.png';
+      let imgLoaded = false;
+      cursorImg.onload = () => { imgLoaded = true; };
 
       const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail matching theme
       const MAX_TRAIL = 28;
@@ -401,18 +407,11 @@
 
         trail = trail.filter(p => p.alpha > 0.03);
 
-        // Draw inner pink cursor dot only (white ring removed)
-        if (mouse.x > 0 && mouse.y > 0) {
+        // Draw your actual cursor.png image once loaded
+        if (mouse.x > 0 && mouse.y > 0 && imgLoaded) {
           ctx.save();
-
-          // Inner pink cursor dot with a soft glow
-          ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 6 * cursorScale, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffa5d2';
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = `rgba(${TRAIL_COLOR}, 0.9)`;
-          ctx.fill();
-
+          const size = 52 * cursorScale; // Change this number to make your cursor graphic bigger or smaller
+          ctx.drawImage(cursorImg, mouse.x - size / 2, mouse.y - size / 2, size, size);
           ctx.restore();
         }
 
