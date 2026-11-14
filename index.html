@@ -401,23 +401,16 @@
 
         trail = trail.filter(p => p.alpha > 0.03);
 
-        // Draw classic osu! cursor (Outer Ring + Inner Dot)
+        // Draw inner pink cursor dot only (white ring removed)
         if (mouse.x > 0 && mouse.y > 0) {
           ctx.save();
-          
-          // Outer spinning/glowing ring
-          ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 18 * cursorScale, 0, Math.PI * 2);
-          ctx.lineWidth = 2.5;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = `rgba(${TRAIL_COLOR}, 0.8)`;
-          ctx.stroke();
 
-          // Inner pink cursor dot
+          // Inner pink cursor dot with a soft glow
           ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 4.5 * cursorScale, 0, Math.PI * 2);
+          ctx.arc(mouse.x, mouse.y, 6 * cursorScale, 0, Math.PI * 2);
           ctx.fillStyle = '#ffa5d2';
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = `rgba(${TRAIL_COLOR}, 0.9)`;
           ctx.fill();
 
           ctx.restore();
