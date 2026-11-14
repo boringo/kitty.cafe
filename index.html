@@ -342,7 +342,7 @@
     setInterval(fetchDiscordData, 10000);
 
     /* ==========================================
-       2. CUSTOM PNG OSU! CURSOR & GLOWING TRAIL
+       2. EMBEDDED BASE64 OSU! CURSOR & TRAIL
        ========================================== */
     const canvas = document.getElementById('osu-cursor-canvas');
     const ctx = canvas.getContext('2d');
@@ -360,14 +360,10 @@
     let isMouseDown = false;
     let cursorScale = 1;
 
-    // Load cursor.png
+    // Load cursor directly using the embedded Base64 string
     const cursorImg = new Image();
-    cursorImg.src = './cursor.png';
-    let imgLoaded = false;
-    
-    cursorImg.onload = () => { 
-      imgLoaded = true; 
-    };
+    cursorImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAACrUExURQAAAL9AgL8/gNRVgOZngOxtgPBwg/Bxhp8ggN1dgO1ugPR1hfd4hfd5gfd6hPd6gsZHgOlpgPR0h/Z4hPh6g/d8hfh8g/h8hfh9hetrgPZ2gvd6hfh8hfh8hPl+hfh+hPl/hfl/hvd6gvh8hfl+hfl/hfl/hfl/hfl/hfl+hfl/hfl/hfl/hfl/hfl/hfl/hfl/hfp/hPuKkvyvtfy9wPp/hPy4vv76+////6sGw+YAAAA3dFJOUwACAgYKDhISAggOGCIqMDIEDBgoOEpYYGQMHDJOaH6Rm582WHyzw8vPg6nH2+Xr7efz+f399/1FeSGVAAAAAWJLR0Q4oAel1gAAAAlwSFlzAAAAyAAAAMgAY/rnrQAAAAd0SU1FB+oLDgMuIN4rQ9sAAAABb3JOVAHPoneaAAABB0lEQVQ4y8VTx3aDQBDzmt5Nx9TFtDW9Gfj/L8shibFT3vqU6Cq9KRrN4fDXAAD8Th4JkqIZmiKJ4080y/GCKMmKLIkCz7Hf+JOq6YZp2Y5tmYauqaev/Nn1/CCMYAyjMPA99/ysYFX3kqQwywtU5BlMk4urPnXhNC+5llXdtF3b1FV5TTyNe5yf1/20RP0wTvM0Dj0qU1/nH3YhBCOAVX9b1m3b1uXWVzAwBGIXkKIZZvWwbO9YhjoLTZHcBZRkRXkzrh+CdWzyyJKo3V9atmHRTtsnpraAtkzfXQeM4sSom++CuUOxozDg5QrYGfBbYH3AOom9Bf6a2DzgE4XPJD7VL/zFv+ENDpY5UZ9AAP0AAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMTEtMTRUMDM6NDY6MzIrMDA6MDCGYnlpAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTExLTE0VDAzOjQ2OjMyKzAwOjAw9z/B1QAAACh0RVh0ZGF0ZTp0aW1lc3d1bXAMjAyNi0xMS0xNFQwMzo0NjozMiswMDowMKAq4AoAAAAASUVORK5CYII=';
+    let imgLoaded = true;
 
     const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail
     const MAX_TRAIL = 28;
@@ -407,7 +403,7 @@
 
       trail = trail.filter(p => p.alpha > 0.03);
 
-      // Draw cursor.png once loaded
+      // Draw cursor image
       if (mouse.x > 0 && mouse.y > 0 && imgLoaded) {
         ctx.save();
         const size = 52 * cursorScale; 
