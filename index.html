@@ -106,7 +106,7 @@
     .status-dnd { background-color: #f23f43; }
     .status-offline { background-color: #80848e; }
 
-    /* Header Row: Aligns top of name and status box cleanly */
+    /* Header Row */
     .header-row {
       display: flex;
       align-items: flex-start;
@@ -135,7 +135,7 @@
       margin-top: 2px;
     }
 
-    /* Hover-to-Expand Activity / Status Box */
+    /* Stretches from username to right edge, clamped to 2 lines */
     .activity-box {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -144,8 +144,8 @@
       font-size: 11px;
       line-height: 1.35;
       color: #d1d5db;
-      flex: 1;
-      max-width: 210px;
+      flex: 1; /* Fills remaining space up to the right edge */
+      min-width: 0;
       text-align: left;
       cursor: pointer;
       transition: background 0.2s ease, border-color 0.2s ease;
@@ -162,19 +162,21 @@
       font-weight: 600;
       color: #e5e7eb;
       margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Clamped to 2 lines by default so it matches the height of Name + @handle */
     .activity-details {
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1; /* Title + 1 detail line = 2 lines total */
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-word;
     }
 
-    /* Drops down to reveal full text on hover (or tap on mobile) */
+    /* Expands fully on hover / tap */
     .activity-box:hover .activity-details,
     .activity-box:focus .activity-details {
       -webkit-line-clamp: unset;
@@ -225,14 +227,14 @@
         <div id="status-dot" class="status-dot status-offline"></div>
       </div>
 
-      <!-- Names & Hover-to-Expand Status Box -->
+      <!-- Names & Stretched Status Box -->
       <div class="header-row">
         <div class="user-info">
           <div id="display-name" class="display-name">loading...</div>
           <div id="username" class="username">@...</div>
         </div>
 
-        <!-- Activity / Status Box (tabindex="0" makes tap-to-expand work on mobile too) -->
+        <!-- Activity / Status Box -->
         <div id="activity-box" class="activity-box" tabindex="0" style="display: none;">
           <div id="activity-title" class="activity-title"></div>
           <div id="activity-details" class="activity-details"></div>
