@@ -29,7 +29,7 @@
     /* Apple Liquid Glass Card */
     .glass-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: rgba(18, 18, 22, 0.65);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
@@ -106,9 +106,18 @@
     .status-dnd { background-color: #f23f43; }
     .status-offline { background-color: #80848e; }
 
-    /* User Info */
+    /* Header Row (Name & Status side-by-side) */
+    .header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
     .user-info {
-      margin-bottom: 16px;
+      flex: 1;
+      min-width: 0;
     }
 
     .display-name {
@@ -116,6 +125,9 @@
       font-weight: 700;
       color: #ffffff;
       letter-spacing: -0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .username {
@@ -124,15 +136,18 @@
       margin-top: 2px;
     }
 
-    /* Activity / Custom Status */
+    /* Compact Activity / Status Box on the Right */
     .activity-box {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      font-size: 13px;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 12px;
       color: #d1d5db;
+      max-width: 160px;
+      text-align: right;
+      word-break: break-word;
+      flex-shrink: 0;
     }
 
     .activity-title {
@@ -178,29 +193,34 @@
     <div id="discord-banner" class="discord-banner"></div>
 
     <div class="profile-body">
-      <!-- Avatar & Decoration -->
+      <!-- Avatar, Decoration & Status Dot -->
       <div class="avatar-container">
         <img id="discord-avatar" class="user-avatar" src="" alt="Avatar">
         <img id="discord-decoration" class="avatar-decoration" style="display: none;" alt="">
         <div id="status-dot" class="status-dot status-offline"></div>
       </div>
 
-      <!-- Names -->
-      <div class="user-info">
-        <div id="display-name" class="display-name">loading...</div>
-        <div id="username" class="username">@...</div>
-      </div>
+      <!-- Names & Side-by-Side Status Box -->
+      <div class="header-row">
+        <div class="user-info">
+          <div id="display-name" class="display-name">loading...</div>
+          <div id="username" class="username">@...</div>
+        </div>
 
-      <!-- Activity / Status Box -->
-      <div id="activity-box" class="activity-box" style="display: none;">
-        <div id="activity-title" class="activity-title"></div>
-        <div id="activity-details"></div>
+        <!-- Activity / Status Box -->
+        <div id="activity-box" class="activity-box" style="display: none;">
+          <div id="activity-title" class="activity-title"></div>
+          <div id="activity-details"></div>
+        </div>
       </div>
 
       <!-- Social & Discord Links -->
       <div class="links-container">
         <a href="https://discord.com/users/1226611648413040821" target="_blank" class="social-link">
           Discord Profile
+        </a>
+        <a href="https://github.com/boringo" target="_blank" class="social-link">
+          GitHub
         </a>
       </div>
     </div>
@@ -226,7 +246,7 @@
           // 2. Avatar
           const avatarImg = document.getElementById('discord-avatar');
           const ext = discord_user.avatar.startsWith('a_') ? 'gif' : 'png';
-          avatarImg.src = `https://cdn.diskordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.${ext}?size=256`.replace('diskord', 'discord');
+          avatarImg.src = `https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.${ext}?size=256`;
 
           // 3. Avatar Decoration
           const decoImg = document.getElementById('discord-decoration');
@@ -255,8 +275,8 @@
 
           if (playingActivity) {
             activityBox.style.display = 'block';
-            activityTitle.textContent = `Playing ${playingActivity.name}`;
-            activityDetails.textContent = playingActivity.details || playingActivity.state || '';
+            activityTitle.textContent = playingActivity.name;
+            activityDetails.textContent = playingActivity.details || playingActivity.state || 'Playing';
           } else if (customStatus && customStatus.state) {
             activityBox.style.display = 'block';
             activityTitle.textContent = 'Status';
