@@ -14,6 +14,13 @@
       padding: 0;
     }
 
+    /* Hide default cursor on desktop devices with a mouse */
+    @media (hover: hover) and (pointer: fine) {
+      *, *::before, *::after {
+        cursor: none !important;
+      }
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: #0f0f11 url('./bg.jpg') no-repeat center center fixed;
@@ -24,6 +31,18 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Fullscreen osu! Cursor Canvas */
+    #osu-cursor-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
     }
 
     /* Apple Liquid Glass Card */
@@ -135,7 +154,7 @@
       margin-top: 2px;
     }
 
-    /* Stretches from username to right edge, clamped to 2 lines */
+    /* Stretches from username to right edge, clamped to 2 lines by default */
     .activity-box {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -144,7 +163,7 @@
       font-size: 11px;
       line-height: 1.35;
       color: #d1d5db;
-      flex: 1; /* Fills remaining space up to the right edge */
+      flex: 1;
       min-width: 0;
       text-align: left;
       cursor: pointer;
@@ -215,6 +234,9 @@
 </head>
 <body>
 
+  <!-- osu! Cursor Canvas -->
+  <canvas id="osu-cursor-canvas"></canvas>
+
   <div class="glass-card">
     <!-- Discord Banner -->
     <div id="discord-banner" class="discord-banner"></div>
@@ -251,6 +273,9 @@
   </div>
 
   <script>
+    /* ==========================================
+       1. DISCORD LANYARD PROFILE LOGIC
+       ========================================== */
     const DISCORD_ID = '1226611648413040821';
 
     async function fetchDiscordData() {
@@ -261,18 +286,18 @@
         if (json.success) {
           const { discord_user, discord_status, activities, kv } = json.data;
 
-          // 1. Banner (from Lanyard KV)
+          // Banner
           const bannerEl = document.getElementById('discord-banner');
           if (kv && kv.banner) {
             bannerEl.style.backgroundImage = `url('${kv.banner}')`;
           }
 
-          // 2. Avatar
+          // Avatar
           const avatarImg = document.getElementById('discord-avatar');
           const ext = discord_user.avatar.startsWith('a_') ? 'gif' : 'png';
           avatarImg.src = `https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.${ext}?size=256`;
 
-          // 3. Avatar Decoration
+          // Avatar Decoration
           const decoImg = document.getElementById('discord-decoration');
           if (discord_user.avatar_decoration_data && discord_user.avatar_decoration_data.asset) {
             decoImg.src = `https://cdn.discordapp.com/avatar-decoration-presets/${discord_user.avatar_decoration_data.asset}.png`;
@@ -281,15 +306,15 @@
             decoImg.style.display = 'none';
           }
 
-          // 4. Names & Handle
+          // Names & Handle
           document.getElementById('display-name').textContent = discord_user.display_name || discord_user.username;
           document.getElementById('username').textContent = `@${discord_user.username}`;
 
-          // 5. Status Dot
+          // Status Dot
           const statusDot = document.getElementById('status-dot');
           statusDot.className = `status-dot status-${discord_status}`;
 
-          // 6. Activities / Custom Status
+          // Activities / Custom Status
           const activityBox = document.getElementById('activity-box');
           const activityTitle = document.getElementById('activity-title');
           const activityDetails = document.getElementById('activity-details');
@@ -314,9 +339,96 @@
       }
     }
 
-    // Initial load and poll every 10 seconds
     fetchDiscordData();
     setInterval(fetchDiscordData, 10000);
+
+    /* ==========================================
+       2. CUSTOM CURSOR & GLOWING TRAIL LOGIC
+       ========================================== */
+    const canvas = document.getElementById('osu-cursor-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+    if (!isTouchDevice) {
+      let mouse = { x: -100, y: -100 };
+      let trail = [];
+      let isMouseDown = false;
+      let cursorScale = 1;
+
+      // Load custom cursor image (cursor.png)
+      const cursorImg = new Image();
+      cursorImg.src = 'cursor.png';
+      let imgLoaded = false;
+      cursorImg.onload = () => { imgLoaded = true; };
+
+      const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail
+      const MAX_TRAIL = 26;
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        trail.push({ x: mouse.x, y: mouse.y, alpha: 0.75 });
+        if (trail.length > MAX_TRAIL) {
+          trail.shift();
+        }
+      });
+
+      window.addEventListener('mousedown', () => { isMouseDown = true; });
+      window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+      function animateCursor() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Smooth scale pulse on click
+        const targetScale = isMouseDown ? 1.25 : 1;
+        cursorScale += (targetScale - cursorScale) * 0.25;
+
+        // Draw smooth glowing trail
+        for (let i = 0; i < trail.length; i++) {
+          const point = trail[i];
+          const progress = i / trail.length;
+          const radius = 12 * progress * cursorScale;
+
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, Math.max(radius, 1), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${TRAIL_COLOR}, ${point.alpha * progress * 0.55})`;
+          ctx.fill();
+
+          point.alpha *= 0.94;
+        }
+
+        trail = trail.filter(p => p.alpha > 0.03);
+
+        // Draw custom cursor image (cursor.png) or fallback circle if loading
+        if (mouse.x > 0 && mouse.y > 0) {
+          ctx.save();
+          if (imgLoaded) {
+            const size = 48 * cursorScale; // Adjust display size of cursor.png here
+            ctx.drawImage(cursorImg, mouse.x - size / 2, mouse.y - size / 2, size, size);
+          } else {
+            // Fallback circle if cursor.png is still loading
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 14 * cursorScale, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        requestAnimationFrame(animateCursor);
+      }
+
+      animateCursor();
+    }
   </script>
 </body>
 </html>
