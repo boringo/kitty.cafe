@@ -355,71 +355,70 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+    let mouse = { x: -100, y: -100 };
+    let trail = [];
+    let isMouseDown = false;
+    let cursorScale = 1;
 
-    if (!isTouchDevice) {
-      let mouse = { x: -100, y: -100 };
-      let trail = [];
-      let isMouseDown = false;
-      let cursorScale = 1;
+    // Load cursor.png
+    const cursorImg = new Image();
+    cursorImg.src = './cursor.png';
+    let imgLoaded = false;
+    
+    cursorImg.onload = () => { 
+      imgLoaded = true; 
+    };
 
-      // Load your cursor.png image file
-      const cursorImg = new Image();
-      cursorImg.src = 'cursor.png';
-      let imgLoaded = false;
-      cursorImg.onload = () => { imgLoaded = true; };
+    const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail
+    const MAX_TRAIL = 28;
 
-      const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail matching theme
-      const MAX_TRAIL = 28;
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      trail.push({ x: mouse.x, y: mouse.y, alpha: 0.8 });
+      if (trail.length > MAX_TRAIL) {
+        trail.shift();
+      }
+    });
 
-      window.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-        trail.push({ x: mouse.x, y: mouse.y, alpha: 0.8 });
-        if (trail.length > MAX_TRAIL) {
-          trail.shift();
-        }
-      });
+    window.addEventListener('mousedown', () => { isMouseDown = true; });
+    window.addEventListener('mouseup', () => { isMouseDown = false; });
 
-      window.addEventListener('mousedown', () => { isMouseDown = true; });
-      window.addEventListener('mouseup', () => { isMouseDown = false; });
+    function animateCursor() {
+      ctx.clearRect(0, 0, width, height);
 
-      function animateCursor() {
-        ctx.clearRect(0, 0, width, height);
+      // Click expansion pulse
+      const targetScale = isMouseDown ? 1.35 : 1;
+      cursorScale += (targetScale - cursorScale) * 0.25;
 
-        // Click expansion pulse (osu! style)
-        const targetScale = isMouseDown ? 1.35 : 1;
-        cursorScale += (targetScale - cursorScale) * 0.25;
+      // Draw glowing trail
+      for (let i = 0; i < trail.length; i++) {
+        const point = trail[i];
+        const progress = i / trail.length;
+        const radius = 14 * progress * cursorScale;
 
-        // Draw glowing trail
-        for (let i = 0; i < trail.length; i++) {
-          const point = trail[i];
-          const progress = i / trail.length;
-          const radius = 14 * progress * cursorScale;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, Math.max(radius, 1), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${TRAIL_COLOR}, ${point.alpha * progress * 0.55})`;
+        ctx.fill();
 
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, Math.max(radius, 1), 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${TRAIL_COLOR}, ${point.alpha * progress * 0.55})`;
-          ctx.fill();
-
-          point.alpha *= 0.93;
-        }
-
-        trail = trail.filter(p => p.alpha > 0.03);
-
-        // Draw your actual cursor.png image once loaded
-        if (mouse.x > 0 && mouse.y > 0 && imgLoaded) {
-          ctx.save();
-          const size = 52 * cursorScale; // Change this number to make your cursor graphic bigger or smaller
-          ctx.drawImage(cursorImg, mouse.x - size / 2, mouse.y - size / 2, size, size);
-          ctx.restore();
-        }
-
-        requestAnimationFrame(animateCursor);
+        point.alpha *= 0.93;
       }
 
-      animateCursor();
+      trail = trail.filter(p => p.alpha > 0.03);
+
+      // Draw cursor.png once loaded
+      if (mouse.x > 0 && mouse.y > 0 && imgLoaded) {
+        ctx.save();
+        const size = 52 * cursorScale; 
+        ctx.drawImage(cursorImg, mouse.x - size / 2, mouse.y - size / 2, size, size);
+        ctx.restore();
+      }
+
+      requestAnimationFrame(animateCursor);
     }
+
+    animateCursor();
   </script>
 </body>
 </html>
