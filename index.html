@@ -106,17 +106,18 @@
     .status-dnd { background-color: #f23f43; }
     .status-offline { background-color: #80848e; }
 
-    /* Header Row: Pushes status as far right as possible */
+    /* Header Row: Aligns top of name and status box cleanly */
     .header-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 20px;
-      flex-wrap: wrap; /* Allows wrapping gracefully if text is too wide */
+      flex-wrap: nowrap;
     }
 
     .user-info {
+      flex: 0 0 auto;
       min-width: 0;
     }
 
@@ -134,24 +135,50 @@
       margin-top: 2px;
     }
 
-    /* Activity / Status Box */
+    /* Hover-to-Expand Activity / Status Box */
     .activity-box {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 12px;
       padding: 8px 12px;
-      font-size: 12px;
+      font-size: 11px;
+      line-height: 1.35;
       color: #d1d5db;
-      max-width: 220px;
+      flex: 1;
+      max-width: 210px;
       text-align: left;
-      word-break: break-word;
-      margin-left: auto; /* Forces it to the far right when space permits */
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .activity-box:hover,
+    .activity-box:focus {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.16);
+      outline: none;
     }
 
     .activity-title {
       font-weight: 600;
       color: #e5e7eb;
       margin-bottom: 2px;
+    }
+
+    /* Clamped to 2 lines by default so it matches the height of Name + @handle */
+    .activity-details {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
+    }
+
+    /* Drops down to reveal full text on hover (or tap on mobile) */
+    .activity-box:hover .activity-details,
+    .activity-box:focus .activity-details {
+      -webkit-line-clamp: unset;
+      overflow: visible;
     }
 
     /* Social Links */
@@ -198,21 +225,21 @@
         <div id="status-dot" class="status-dot status-offline"></div>
       </div>
 
-      <!-- Names & Status Box -->
+      <!-- Names & Hover-to-Expand Status Box -->
       <div class="header-row">
         <div class="user-info">
           <div id="display-name" class="display-name">loading...</div>
           <div id="username" class="username">@...</div>
         </div>
 
-        <!-- Activity / Status Box -->
-        <div id="activity-box" class="activity-box" style="display: none;">
+        <!-- Activity / Status Box (tabindex="0" makes tap-to-expand work on mobile too) -->
+        <div id="activity-box" class="activity-box" tabindex="0" style="display: none;">
           <div id="activity-title" class="activity-title"></div>
-          <div id="activity-details"></div>
+          <div id="activity-details" class="activity-details"></div>
         </div>
       </div>
 
-      <!-- Social Links (Discord only) -->
+      <!-- Social Links -->
       <div class="links-container">
         <a href="https://discord.com/users/1226611648413040821" target="_blank" class="social-link">
           Discord Profile
