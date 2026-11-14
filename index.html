@@ -202,9 +202,6 @@
         <a href="https://discord.com/users/1226611648413040821" target="_blank" class="social-link">
           Discord Profile
         </a>
-        <a href="https://github.com/boringo" target="_blank" class="social-link">
-          GitHub
-        </a>
       </div>
     </div>
   </div>
@@ -262,7 +259,7 @@
             activityDetails.textContent = playingActivity.details || playingActivity.state || '';
           } else if (customStatus && customStatus.state) {
             activityBox.style.display = 'block';
-            activityTitle.textContent = 'Custom Status';
+            activityTitle.textContent = 'Status';
             activityDetails.textContent = customStatus.state;
           } else {
             activityBox.style.display = 'none';
