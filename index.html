@@ -188,14 +188,13 @@
 
     .activity-details {
       display: -webkit-box;
-      -webkit-line-clamp: 1; /* Title + 1 detail line = 2 lines total */
+      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-word;
     }
 
-    /* Expands fully on hover / tap */
     .activity-box:hover .activity-details,
     .activity-box:focus .activity-details {
       -webkit-line-clamp: unset;
@@ -343,7 +342,7 @@
     setInterval(fetchDiscordData, 10000);
 
     /* ==========================================
-       2. CUSTOM CURSOR & GLOWING TRAIL LOGIC
+       2. CLASSIC OSU! CURSOR & GLOWING TRAIL
        ========================================== */
     const canvas = document.getElementById('osu-cursor-canvas');
     const ctx = canvas.getContext('2d');
@@ -364,19 +363,13 @@
       let isMouseDown = false;
       let cursorScale = 1;
 
-      // Load custom cursor image (cursor.png)
-      const cursorImg = new Image();
-      cursorImg.src = 'cursor.png';
-      let imgLoaded = false;
-      cursorImg.onload = () => { imgLoaded = true; };
-
-      const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail
-      const MAX_TRAIL = 26;
+      const TRAIL_COLOR = '255, 165, 210'; // Soft pink RGB trail matching theme
+      const MAX_TRAIL = 28;
 
       window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
-        trail.push({ x: mouse.x, y: mouse.y, alpha: 0.75 });
+        trail.push({ x: mouse.x, y: mouse.y, alpha: 0.8 });
         if (trail.length > MAX_TRAIL) {
           trail.shift();
         }
@@ -388,39 +381,45 @@
       function animateCursor() {
         ctx.clearRect(0, 0, width, height);
 
-        // Smooth scale pulse on click
-        const targetScale = isMouseDown ? 1.25 : 1;
+        // Click expansion pulse (osu! style)
+        const targetScale = isMouseDown ? 1.35 : 1;
         cursorScale += (targetScale - cursorScale) * 0.25;
 
-        // Draw smooth glowing trail
+        // Draw glowing trail
         for (let i = 0; i < trail.length; i++) {
           const point = trail[i];
           const progress = i / trail.length;
-          const radius = 12 * progress * cursorScale;
+          const radius = 14 * progress * cursorScale;
 
           ctx.beginPath();
           ctx.arc(point.x, point.y, Math.max(radius, 1), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${TRAIL_COLOR}, ${point.alpha * progress * 0.55})`;
           ctx.fill();
 
-          point.alpha *= 0.94;
+          point.alpha *= 0.93;
         }
 
         trail = trail.filter(p => p.alpha > 0.03);
 
-        // Draw custom cursor image (cursor.png) or fallback circle if loading
+        // Draw classic osu! cursor (Outer Ring + Inner Dot)
         if (mouse.x > 0 && mouse.y > 0) {
           ctx.save();
-          if (imgLoaded) {
-            const size = 48 * cursorScale; // Adjust display size of cursor.png here
-            ctx.drawImage(cursorImg, mouse.x - size / 2, mouse.y - size / 2, size, size);
-          } else {
-            // Fallback circle if cursor.png is still loading
-            ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, 14 * cursorScale, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-          }
+          
+          // Outer spinning/glowing ring
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, 18 * cursorScale, 0, Math.PI * 2);
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = `rgba(${TRAIL_COLOR}, 0.8)`;
+          ctx.stroke();
+
+          // Inner pink cursor dot
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, 4.5 * cursorScale, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffa5d2';
+          ctx.fill();
+
           ctx.restore();
         }
 
